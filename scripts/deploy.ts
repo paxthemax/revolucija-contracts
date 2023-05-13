@@ -1,10 +1,11 @@
 import hre from "hardhat";
 
 import { VERBOSE } from "../hardhat.config";
-import { Counter, Counter__factory } from "../types";
+import { Counter, Counter__factory, Revolucija__factory } from "../types";
 import { deployWait } from "./utils";
 import { GasOptions } from "./types";
 import { Wallet } from "ethers";
+import { Revolucija } from "../types/contracts";
 
 // --- Helper functions for deploying contracts ---
 
@@ -35,4 +36,27 @@ export async function deployCounter(
     hre.tracer.nameTags[counterContract.address] = `Counter`;
 
     return counterContract;
+}
+
+// deployCounter deploys the Revolucija contract.
+async function deployRevolucija(
+    wallet: Wallet,
+    gasOpts?: GasOptions,
+    initCount?: number,
+): Promise<Counter> {
+    let revolucijaContract: Revolucija;
+    const revolucija: Revolucija__factory = await hre.ethers.getContractFactory(
+        "Revolucija",
+        wallet,
+    );
+    revolucijaContract = await deployWait(
+        revolucija.deploy({
+            maxFeePerGas: gasOpts?.maxFeePerGas,
+            maxPriorityFeePerGas: gasOpts?.maxPriorityFeePerGas,
+            gasLimit: gasOpts?.gasLimit,
+        }),
+    );
+
+    if (VERBOSE) console.log(`Revolucija: ${revolucijaContract.address}`);
+    hre.tracer.nameTags[revolucijaContract.address] = `Counter`;
 }

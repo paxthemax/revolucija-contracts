@@ -19,11 +19,13 @@ async function main(wallet?: Wallet, gasOpts?: GasOptions): Promise<void> {
     }
 
     switch (askForUsage()) {
+        // TODO: add deployment code here:
         case Usage.DEPLOY: {
             await trackDeployment(() => deployCounter(wallet!, gasOpts, 0), `Counter`);
             void main(wallet, gasOpts);
             break;
         }
+        // TODO: add call code here:
         case Usage.CALL: {
             const addr = askForContract(`Counter`);
             const counter: Counter = await ethers.getContractAt(`Counter`, addr);
