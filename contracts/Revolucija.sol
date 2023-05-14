@@ -4,15 +4,13 @@ pragma solidity ^0.8.0;
 import {ERC721, ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
+import {Constants} from "./Constants.sol";
 import {IClaimable} from "./interfaces/IClaimable.sol";
 import {RandomHash} from "./lib/RandomHash.sol";
 
-contract Revolucija is IClaimable, ERC721Enumerable, Ownable2Step {
+contract Revolucija is IClaimable, Constants, ERC721Enumerable, Ownable2Step {
     string private constant NAME = "Revolucija!";
     string private constant SYMBOL = "REVLC";
-
-    uint256 public constant MAX_CLAIMABLE_TOKEN_ID = 9000;
-    uint256 public constant MAX_TOKEN_ID = 10_000;
 
     /// Reverted when not called by mint controller
     /// @param caller caller address

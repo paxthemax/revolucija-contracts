@@ -1,11 +1,11 @@
 import hre from "hardhat";
 
 import { VERBOSE } from "../hardhat.config";
-import { Counter, Counter__factory, Revolucija__factory } from "../types";
+import { Counter, Counter__factory, MintController__factory, Revolucija__factory } from "../types";
 import { deployWait } from "./utils";
 import { GasOptions } from "./types";
 import { Wallet } from "ethers";
-import { Revolucija } from "../types/contracts";
+import { MintController, Revolucija } from "../types";
 
 // --- Helper functions for deploying contracts ---
 
@@ -39,24 +39,37 @@ export async function deployCounter(
 }
 
 // deployCounter deploys the Revolucija contract.
-async function deployRevolucija(
+export async function deployRevolucija(
     wallet: Wallet,
     gasOpts?: GasOptions,
-    initCount?: number,
-): Promise<Counter> {
+): Promise<{ mintController: MintController; revolucija: Revolucija }> {
+    let mintContollerContract: MintController;
     let revolucijaContract: Revolucija;
+
+    const txOpts = {
+        maxFeePerGas: gasOpts?.maxFeePerGas,
+        maxPriorityFeePerGas: gasOpts?.maxPriorityFeePerGas,
+        gasLimit: gasOpts?.gasLimit,
+    };
+
+    const mintController: MintController__factory = await hre.ethers.getContractFactory(
+        "MintController",
+        wallet,
+    );
     const revolucija: Revolucija__factory = await hre.ethers.getContractFactory(
         "Revolucija",
         wallet,
     );
-    revolucijaContract = await deployWait(
-        revolucija.deploy({
-            maxFeePerGas: gasOpts?.maxFeePerGas,
-            maxPriorityFeePerGas: gasOpts?.maxPriorityFeePerGas,
-            gasLimit: gasOpts?.gasLimit,
-        }),
-    );
 
-    if (VERBOSE) console.log(`Revolucija: ${revolucijaContract.address}`);
-    hre.tracer.nameTags[revolucijaContract.address] = `Counter`;
+    mintContollerContract = await deployWait(mintController.deploy(txOpts));
+    revolucijaContract = await deployWait(revolucija.deploy(mintContollerContract.address, txOpts));
+
+    if (VERBOSE) {
+        console.log(`Revolucija: ${revolucijaContract.address}`);
+        console.log(`Mint Controller: ${mintContollerContract.address}`);
+    }
+    hre.tracer.nameTags[revolucijaContract.address] = `Revolucija`;
+    hre.tracer.nameTags[mintContollerContract.address] = `MintController`;
+
+    return { mintController: mintContollerContract, revolucija: revolucijaContract };
 }

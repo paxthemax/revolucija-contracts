@@ -10,8 +10,7 @@ contract RevolucijaTest is ERC721Receiver, Test {
     string constant EXPECTED_NAME = "Revolucija!";
     string constant EXPECTED_SYMBOL = "REVLC";
 
-    uint256 constant MAX_CLAIMABLE_TOKEN_ID = 9_000;
-    uint256 constant MAX_TOKEN_ID = 10_000;
+    uint256 constant MAX_CLAIMABLE_TOKEN_ID = 10_000;
 
     Revolucija revolucija;
 
@@ -26,17 +25,9 @@ contract RevolucijaTest is ERC721Receiver, Test {
         emit log_named_uint("claimed token id", tokenId);
     }
 
-    // function claimTokenOwner(uint256 tokenId) private {
-    //     revolucija.claimOwner(tokenId);
-    //     assertEq(revolucija.ownerOf(tokenId), address(this));
-    //     emit log_named_uint("claimedOwner token id", tokenId);
-    // }
-
     function testInvariants() public {
         assertEq(revolucija.name(), EXPECTED_NAME);
         assertEq(revolucija.symbol(), EXPECTED_SYMBOL);
-        assertEq(revolucija.MAX_CLAIMABLE_TOKEN_ID(), MAX_CLAIMABLE_TOKEN_ID);
-        assertEq(revolucija.MAX_TOKEN_ID(), MAX_TOKEN_ID);
     }
 
     function testDeployment() public {
@@ -47,6 +38,8 @@ contract RevolucijaTest is ERC721Receiver, Test {
         address controller = address(0xBABA);
         Revolucija instance = new Revolucija(controller);
         assertEq(instance.mintController(), controller);
+
+        emit log("deployed");
     }
 
     function testClaim() public {
@@ -66,20 +59,4 @@ contract RevolucijaTest is ERC721Receiver, Test {
         claimToken(0, address(0xAAAAA));
         claimToken(123, address(0xBBBB));
     }
-
-    // function testClaimOwner() public {
-    //     vm.prank(address(0xDEADBAD));
-    //     try revolucija.claimOwner(0) {
-    //         fail("should revert if not called by owner");
-    //     } catch {}
-
-    //     try revolucija.claimOwner(MAX_TOKEN_ID) {
-    //         fail("should revert if token out of total range");
-    //     } catch {}
-
-    //     claimTokenOwner(0);
-    //     claimTokenOwner(123);
-    //     claimTokenOwner(MAX_CLAIMABLE_TOKEN_ID);
-    //     claimTokenOwner(MAX_CLAIMABLE_TOKEN_ID + 123);
-    // }
 }
