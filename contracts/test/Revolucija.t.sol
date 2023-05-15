@@ -42,6 +42,20 @@ contract RevolucijaTest is ERC721Receiver, Test {
         emit log("deployed");
     }
 
+    function testSetRandomSeed() public {
+        vm.prank(address(0xDEADBEEF));
+        try revolucija.setRandomSeed(12345) {
+            fail("should fail if not called by controller");
+        } catch {}
+
+        revolucija.setRandomSeed(12345);
+        assertEq(revolucija.randomSeed(), 12345);
+
+        try revolucija.setRandomSeed(2132) {
+            emit log("should fail if seed already set");
+        } catch {}
+    }
+
     function testClaim() public {
         vm.prank(address(0xDEADBEEF));
         try revolucija.claim(0, address(0)) {
