@@ -2,8 +2,9 @@
 pragma solidity ^0.8.17;
 
 import {IClaimable} from "../../interfaces/IClaimable.sol";
+import {IRandomSeeded} from "../../interfaces/IRandomSeeded.sol";
 
-contract ClaimableMock is IClaimable {
+contract IssuedTokenMock is IClaimable {
     mapping(address => mapping(uint256 => bool)) claimed;
 
     function claim(uint256 tokenId, address beneficiary) external {
@@ -12,5 +13,11 @@ contract ClaimableMock is IClaimable {
 
     function hasClaimed(address account, uint256 tokenId) public view returns (bool) {
         return claimed[account][tokenId];
+    }
+
+    bool public randomSeedCalled;
+
+    function setRandomSeed(uint256) external {
+        randomSeedCalled = true;
     }
 }

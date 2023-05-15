@@ -3,12 +3,12 @@ pragma solidity ^0.8.17;
 
 import {Test} from "./utils/Test.sol";
 import {TestERC20} from "./mocks/TestERC20.sol";
-import {ClaimableMock} from "./mocks/ClaimableMock.sol";
+import {IssuedTokenMock} from "./mocks/IssuedTokenMock.sol";
 
 import {MintController} from "../MintContoller.sol";
 
 contract MintControllerTest is Test {
-    ClaimableMock issuedToken;
+    IssuedTokenMock issuedToken;
     TestERC20 paymentToken;
     MintController mintController;
     uint256 price;
@@ -16,7 +16,7 @@ contract MintControllerTest is Test {
     function setUp() public {
         price = 1 ether;
 
-        issuedToken = new ClaimableMock();
+        issuedToken = new IssuedTokenMock();
         paymentToken = new TestERC20();
         mintController = new MintController();
 
@@ -48,6 +48,16 @@ contract MintControllerTest is Test {
         try instance.initalize(address(issuedToken), address(paymentToken), 1 ether) {
             fail("should revert if already initalized");
         } catch {}
+    }
+
+    function testSetRandomSeed() public {
+        vm.prank(address(0xDEADBAD));
+        try mintController.setRandomSeed(12345) {
+            fail("should revert if not called by owner");
+        } catch {}
+
+        mintController.setRandomSeed(12345);
+        assertTrue(issuedToken.randomSeedCalled());
     }
 
     function testBuy() public {

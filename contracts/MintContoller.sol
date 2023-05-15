@@ -7,6 +7,7 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import {IClaimable} from "./interfaces/IClaimable.sol";
+import {IRandomSeeded} from "./interfaces/IRandomSeeded.sol";
 
 contract MintController is Initializable, Ownable2Step {
     using SafeERC20 for IERC20;
@@ -28,14 +29,18 @@ contract MintController is Initializable, Ownable2Step {
         price = _price;
     }
 
+    function setRandomSeed(uint256 input) external onlyOwner {
+        IRandomSeeded(issuedToken).setRandomSeed(input);
+    }
+
+    function adminClaim(uint256 tokenId) external onlyOwner {
+        IClaimable(issuedToken).claim(tokenId, msg.sender);
+    }
+
     function buy(uint256 tokenId) external {
         if (price != 0) {
             IERC20(paymentToken).safeTransferFrom(msg.sender, address(this), price);
         }
-        IClaimable(issuedToken).claim(tokenId, msg.sender);
-    }
-
-    function adminClaim(uint256 tokenId) external onlyOwner {
         IClaimable(issuedToken).claim(tokenId, msg.sender);
     }
 }
