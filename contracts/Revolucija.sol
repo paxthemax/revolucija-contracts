@@ -20,27 +20,27 @@ contract Revolucija is
     string private constant NAME = "Revolucija!";
     string private constant SYMBOL = "REVLC";
 
-    address public mintController;
+    address public controller;
     uint256 public randomSeed;
 
     constructor(address _mintController) ERC721(NAME, SYMBOL) {
         if (_mintController == address(0)) revert();
 
-        mintController = _mintController;
+        controller = _mintController;
     }
 
-    modifier onlyMintContoller() {
-        if (msg.sender != mintController) revert NotMintContoller(msg.sender);
+    modifier onlyController() {
+        if (msg.sender != controller) revert NotMintContoller(msg.sender);
         _;
     }
 
-    function claim(uint256 tokenId, address beneficiary) external onlyMintContoller {
+    function claim(uint256 tokenId, address beneficiary) external onlyController {
         if (beneficiary == address(0)) revert NoClaimToZeroAddress();
         if (tokenId >= MAX_CLAIMABLE_TOKEN_ID) revert OutOfRange(tokenId);
         _safeMint(beneficiary, tokenId);
     }
 
-    function setRandomSeed(uint256 input) external onlyMintContoller {
+    function setRandomSeed(uint256 input) external onlyController {
         if (randomSeed != 0) revert RandomSeedAlreadySet();
         randomSeed = input;
         emit RandomSeedSet(randomSeed);

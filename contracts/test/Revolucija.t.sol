@@ -37,7 +37,7 @@ contract RevolucijaTest is ERC721Receiver, Test {
 
         address controller = address(0xBABA);
         Revolucija instance = new Revolucija(controller);
-        assertEq(instance.mintController(), controller);
+        assertEq(instance.controller(), controller);
 
         emit log("deployed");
     }
