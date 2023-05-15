@@ -29,7 +29,9 @@ contract MintController is Initializable, Ownable2Step {
     }
 
     function buy(uint256 tokenId) external {
-        IERC20(paymentToken).safeTransferFrom(msg.sender, address(this), price);
+        if (price != 0) {
+            IERC20(paymentToken).safeTransferFrom(msg.sender, address(this), price);
+        }
         IClaimable(issuedToken).claim(tokenId, msg.sender);
     }
 
