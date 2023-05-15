@@ -21,8 +21,7 @@ contract Revolucija is
     string private constant SYMBOL = "REVLC";
 
     address public mintController;
-
-    uint256 internal randomSeed;
+    uint256 public randomSeed;
 
     constructor(address _mintController) ERC721(NAME, SYMBOL) {
         if (_mintController == address(0)) revert();
@@ -43,25 +42,7 @@ contract Revolucija is
 
     function setRandomSeed(uint256 input) external onlyMintContoller {
         if (randomSeed != 0) revert RandomSeedAlreadySet();
-        randomSeed = computeRandomSeed(input);
-
+        randomSeed = input;
         emit RandomSeedSet(randomSeed);
-    }
-
-    function computeRandomSeed(uint256 input) internal view returns (uint256) {
-        return
-            uint256(
-                keccak256(
-                    abi.encode(
-                        input,
-                        tx.gasprice,
-                        block.number,
-                        block.timestamp,
-                        block.difficulty,
-                        blockhash(block.number - 1),
-                        address(this)
-                    )
-                )
-            );
     }
 }
