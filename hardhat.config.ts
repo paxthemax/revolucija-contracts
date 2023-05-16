@@ -124,13 +124,15 @@ const SOLC_DEFAULT: string = `0.8.17`;
 let foundry;
 try {
     foundry = toml.parse(readFileSync(`./foundry.toml`).toString());
-    foundry.default.solc = foundry.default[`solc-version`]
-        ? foundry.default[`solc-version`]
+    foundry.profile.default.solc = foundry.profile.default[`solc-version`]
+        ? foundry.profile.default[`solc-version`]
         : SOLC_DEFAULT;
 } catch (error) {
     foundry = {
-        default: {
-            solc: SOLC_DEFAULT,
+        profile: {
+            default: {
+                solc: SOLC_DEFAULT,
+            },
         },
     };
 }
@@ -151,20 +153,20 @@ const config: HardhatUserConfig = {
     },
     defaultNetwork: `hardhat`,
     solidity: {
-        version: foundry.default?.solc || SOLC_DEFAULT,
+        version: foundry.profile?.default?.solc || SOLC_DEFAULT,
         settings: {
             optimizer: {
                 // Disable the optimizer when debugging
                 // https://hardhat.org/hardhat-network/#solidity-optimizer-support
-                enabled: foundry.default?.optimizer || true,
-                runs: foundry.default?.optimizer_runs || 200,
+                enabled: foundry.profile?.fault?.optimizer || true,
+                runs: foundry.profile?.default?.optimizer_runs || 200,
                 details: {
-                    yul: foundry.default?.optimizer_details?.yul || true,
+                    yul: foundry.profile?.default?.optimizer_details?.yul || true,
                 },
             },
             // If stack-too-deep error occurs, flip this on
             // otherwise leave off for faster builds
-            viaIR: foundry.default?.via_ir || false,
+            viaIR: foundry.profile?.default?.via_ir || false,
         },
     },
     networks: {
