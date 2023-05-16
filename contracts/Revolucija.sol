@@ -45,4 +45,8 @@ contract Revolucija is
         randomSeed = input;
         emit RandomSeedSet(randomSeed);
     }
+
+    function getRandom(uint256 input) internal view returns (uint256) {
+        return uint256(keccak256(abi.encodePacked(randomSeed, input)));
+    }
 }
